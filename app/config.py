@@ -19,10 +19,12 @@ BLOCKLIST_FILE = ROOT / "data" / "blocklist.txt"
 ENRICH_ONLINE = os.getenv("ENRICH_ONLINE", "0") == "1"   # set to 1 to use AbuseIPDB
 ABUSEIPDB_API_KEY = os.getenv("ABUSEIPDB_API_KEY", "")
 
-# --- LLM (used from Phase 3) ---
-LLM_BASE_URL = "https://openrouter.ai/api/v1"
+# --- LLM (any OpenAI-compatible provider: OpenRouter, Google AI Studio, Groq, ...) ---
+LLM_BASE_URL = os.getenv("LLM_BASE_URL", "https://openrouter.ai/api/v1")
 LLM_MODEL = os.getenv("LLM_MODEL", "anthropic/claude-haiku-4.5")
-OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY", "")
+OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY", "")                   # kept for older .env files
+LLM_API_KEY = os.getenv("LLM_API_KEY") or OPENROUTER_API_KEY               # LLM_API_KEY wins if set
+LLM_MAX_RETRIES = int(os.getenv("LLM_MAX_RETRIES", "2"))                   # use 0 on tight free quotas
 
 # --- agent limits (Phase 3) ---
 AGENT_MAX_ROUNDS = 8         # maximum tool-calling rounds per alert

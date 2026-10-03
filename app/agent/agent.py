@@ -25,10 +25,10 @@ class AgentRun(BaseModel):
 
 def make_client():
     from openai import OpenAI   # imported here so tests can run without the package
-    if not config.OPENROUTER_API_KEY:
-        raise RuntimeError("OPENROUTER_API_KEY is missing from .env")
-    return OpenAI(base_url=config.LLM_BASE_URL, api_key=config.OPENROUTER_API_KEY,
-                  timeout=60, max_retries=2)
+    if not config.LLM_API_KEY:
+        raise RuntimeError("LLM_API_KEY (or OPENROUTER_API_KEY) is missing from .env")
+    return OpenAI(base_url=config.LLM_BASE_URL, api_key=config.LLM_API_KEY,
+                  timeout=60, max_retries=config.LLM_MAX_RETRIES)
 
 
 def apply_guardrails(inc: Incident, alert: Alert) -> Incident:
@@ -61,6 +61,19 @@ def _user_message(alert: Alert, ctx: CaseContext) -> str:
     others = [a.id for a in ctx.alerts if a.id != alert.id]
     return ("Investigate this alert.\n<alert>\n" + json.dumps(alert_dict(alert), indent=1) +
             f"\n</alert>\nOther alerts in this case: {others or 'none'}.")
+
+
+def _tool_call_dict(c) -> dict:
+    """Rebuild a tool call for the next request. Some providers (Google Gemini 3.x) attach opaque
+    'extra_content' (a thought signature) that must be sent back unchanged or the next call is rejected."""
+    d = {"id": c.id, "type": "function",
+         "function": {"name": c.function.name, "arguments": c.function.arguments or "{}"}}
+    extra = getattr(c, "extra_content", None)
+    if extra is None:
+        extra = (getattr(c, "model_extra", None) or {}).get("extra_content")
+    if extra:
+        d["extra_content"] = extra
+    return d
 
 
 def analyze_alert(alert: Alert, ctx: CaseContext, client=None, model: Optional[str] = None,
@@ -99,10 +112,7 @@ def analyze_alert(alert: Alert, ctx: CaseContext, client=None, model: Optional[s
         msg = resp.choices[0].message
         calls = getattr(msg, "tool_calls", None) or []
         messages.append({"role": "assistant", "content": msg.content or "",
-                         "tool_calls": [{"id": c.id, "type": "function",
-                                         "function": {"name": c.function.name,
-                                                      "arguments": c.function.arguments or "{}"}}
-                                        for c in calls]} if calls else
+                         "tool_calls": [_tool_call_dict(c) for c in calls]} if calls else
                         {"role": "assistant", "content": msg.content or ""})
         if not calls:
             if nudged:

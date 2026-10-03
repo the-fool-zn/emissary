@@ -207,7 +207,7 @@ def test_ai_outage_still_gives_a_reviewable_incident(tmp_path, pwhash):
 
 
 def test_missing_llm_key_is_handled(tmp_path, pwhash, monkeypatch):
-    monkeypatch.setattr("app.config.OPENROUTER_API_KEY", "")
+    monkeypatch.setattr("app.config.LLM_API_KEY", "")
     c, _ = authed(tmp_path, pwhash, factory=lambda: None)
     assert upload(c).status_code == 303
     assert "LLM not configured" in c.get("/incidents/1").text

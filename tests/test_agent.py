@@ -122,3 +122,17 @@ def test_false_positive_sample_is_an_internal_single_account_alert():
     assert len(alerts) == 1 and alerts[0].src_ip == "10.0.0.25"
     assert alerts[0].users == ["alice"] and alerts[0].severity == "P2"
     assert alerts[0].details["successful_logins"][0]["user"] == "alice"
+
+
+def test_provider_extra_content_is_echoed_back():
+    """Gemini 3.x needs its thought signature returned with the tool call."""
+    alerts, ctx = load("auth.log", "auth")
+    sig = {"google": {"thought_signature": "abc123"}}
+    tc = call(1, "enrich_ip", {"ip": "203.0.113.50"})
+    tc.extra_content = sig
+    fake = FakeClient([reply([tc]), reply([call(2, "finalize_incident", GOOD)])])
+    run = analyze_alert(alerts[0], ctx, client=fake, model="fake")
+    assert not run.fallback
+    second_request = fake.seen[1]
+    assistant = [m for m in second_request if m["role"] == "assistant"][0]
+    assert assistant["tool_calls"][0]["extra_content"] == sig

@@ -77,7 +77,7 @@ def test_llm_outage_still_stores_a_safe_incident(dbpath):
 
 
 def test_benign_file_needs_no_llm_at_all(dbpath, monkeypatch):
-    monkeypatch.setattr("app.config.OPENROUTER_API_KEY", "")     # a client would fail to build
+    monkeypatch.setattr("app.config.LLM_API_KEY", "")     # a client would fail to build
     conn = db.connect(dbpath)
     res = analyze_text(conn, "benign_auth.log", "auth", (SAMPLES / "benign_auth.log").read_text())
     assert res["alerts"] == 0 and res["incident_ids"] == []
