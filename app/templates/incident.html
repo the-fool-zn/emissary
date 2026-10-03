@@ -1,0 +1,26 @@
+{% extends "base.html" %}{% block title %}Incident {{ d.id }}{% endblock %}
+{% block body %}{% set inc = d.incident %}{% set al = d.alert %}
+<h1>#{{ d.id }} &middot; {{ inc.title }}</h1>
+{% if d.fallback %}<div class="warn">The automated investigation did not complete. This is the rule-based alert only; a human must review it.</div>{% endif %}
+<div class="card"><span class="sev sev-{{ inc.severity }}">{{ inc.severity }}</span> &nbsp; Verdict: <b>{{ inc.verdict }}</b> (confidence {{ inc.confidence }}) &nbsp;&middot;&nbsp; Status: <b>{{ d.status }}</b><br>
+<span class="muted">Source IP {{ al.src_ip or "-" }} &middot; detector {{ al.detector }} (rule score {{ al.score }}) &middot; {{ al.first_seen }} to {{ al.last_seen }} UTC &middot; {{ al.count }} events &middot; created {{ d.created_at }}</span></div>
+<h2>Summary</h2><div class="card">{{ inc.summary }}</div>
+<h2>Evidence</h2><div class="card"><ul class="plain">{% for e in inc.evidence %}<li>{{ e }}</li>{% endfor %}</ul></div>
+<h2>MITRE ATT&amp;CK</h2><div class="card">{{ inc.mitre | join(", ") or "-" }}</div>
+<h2>Recommended actions (for a human to carry out)</h2><div class="card"><ol class="plain">{% for a in inc.recommended_actions %}<li>{{ a }}</li>{% endfor %}</ol></div>
+<h2>Reasoning</h2><div class="card">{{ inc.reasoning or "-" }}</div>
+{% if inc.guardrail_notes %}<h2>Guardrail notes</h2><div class="warn"><ul class="plain">{% for n in inc.guardrail_notes %}<li>{{ n }}</li>{% endfor %}</ul></div>{% endif %}
+<h2>Why the rules fired</h2><div class="card"><ul class="plain">{% for r in al.score_reasons %}<li>{{ r }}</li>{% endfor %}</ul></div>
+<h2>Raw log evidence</h2><pre>{% for line in al.evidence %}{{ line }}
+{% endfor %}</pre>
+<h2>Your decision</h2><div class="card row">
+<form method="post" action="/incidents/{{ d.id }}/status" class="row"><input type="hidden" name="csrf" value="{{ csrf }}">
+<div><label>Status</label><br><select name="status">{% for s in statuses %}<option value="{{ s }}" {% if s == d.status %}selected{% endif %}>{{ s }}</option>{% endfor %}</select></div><div><button>Update status</button></div></form>
+<form method="post" action="/incidents/{{ d.id }}/feedback" class="row"><input type="hidden" name="csrf" value="{{ csrf }}">
+<div><label>Was the verdict right?</label><br><select name="label"><option value="true_positive">Real attack (true positive)</option><option value="false_positive">False alarm (false positive)</option></select></div>
+<div><label>Note</label><br><input name="note" maxlength="500" size="34"></div><div><button>Save feedback</button></div></form></div>
+{% if d.feedback %}<ul class="plain">{% for f in d.feedback %}<li>{{ f.created_at }}: {{ f.label }} {{ f.note }}</li>{% endfor %}</ul>{% endif %}
+<p><a href="/incidents/{{ d.id }}/report.md">Download Markdown report</a></p>
+<h2>Investigation trail</h2><p class="muted">Model {{ d.model }} &middot; {{ d.rounds }} rounds &middot; {{ d.tokens }} tokens</p>
+<table><tr><th>Round</th><th>Tool</th><th>Arguments</th></tr>{% for t in d.tool_calls %}<tr><td>{{ t.round }}</td><td>{{ t.tool }}</td><td class="wrap">{{ t.arguments[:300] }}</td></tr>{% endfor %}</table>
+{% endblock %}

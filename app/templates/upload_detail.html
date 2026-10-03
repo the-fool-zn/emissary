@@ -1,0 +1,15 @@
+{% extends "base.html" %}{% block title %}Upload {{ up.id }}{% endblock %}
+{% block body %}<h1>Upload #{{ up.id }}: {{ up.filename }}</h1>
+<div class="card">Type: {{ up.source_type }} &middot; {{ up.event_count }} events parsed &middot; {{ up.parse_errors }} lines could not be parsed &middot; {{ up.alert_count }} alert(s) &middot; {{ up.created_at }}</div>
+{% if up.event_count == 0 %}
+<div class="warn"><b>Nothing was checked: this file could not be read as a {{ source_types.get(up.source_type, up.source_type) }}.</b>
+{{ up.parse_errors }} line(s) were unreadable.
+{% if suggest %}It looks like a <b>{{ source_types[suggest] }}</b>. <a href="/upload">Upload it again</a> with that log type.
+{% else %}Check that you chose the right log type and that the file is a plain-text log. <a href="/upload">Try again</a>.{% endif %}</div>
+{% elif up.parse_errors > 0 %}
+<div class="warn">{{ up.parse_errors }} line(s) could not be parsed and were <b>not</b> checked.</div>
+{% endif %}
+{% if up.incidents %}<h2>Incidents</h2><table><tr><th>#</th><th>Severity</th><th>Title</th><th>Verdict</th></tr>
+{% for i in up.incidents %}<tr><td>{{ i.id }}</td><td><span class="sev sev-{{ i.severity }}">{{ i.severity }}</span></td><td><a href="/incidents/{{ i.id }}">{{ i.title }}</a>{% if i.fallback %} <span class="muted">(automated review incomplete)</span>{% endif %}</td><td>{{ i.verdict }}</td></tr>{% endfor %}</table>
+{% elif up.alert_count %}<div class="warn">Alerts were found but not investigated by the AI (limit reached or disabled).</div>
+{% elif up.event_count > 0 %}<div class="card">{{ up.event_count }} events were checked and no suspicious patterns were detected.</div>{% endif %}{% endblock %}

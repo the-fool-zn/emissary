@@ -1,0 +1,12 @@
+Oct  3 08:45:12 web01 sshd[4000]: Accepted password for alice from 10.0.0.25 port 51022 ssh2
+Oct  3 09:02:40 web01 sshd[4001]: Accepted password for alice from 10.0.0.25 port 51877 ssh2
+Oct  3 09:10:25 web01 sshd[4002]: Failed password for alice from 10.0.0.25 port 52311 ssh2
+Oct  3 09:10:47 web01 sshd[4003]: Failed password for alice from 10.0.0.25 port 52340 ssh2
+Oct  3 09:11:18 web01 sshd[4004]: Failed password for alice from 10.0.0.25 port 52352 ssh2
+Oct  3 09:11:36 web01 sshd[4005]: Failed password for alice from 10.0.0.25 port 52391 ssh2
+Oct  3 09:12:16 web01 sshd[4006]: Failed password for alice from 10.0.0.25 port 52420 ssh2
+Oct  3 09:12:43 web01 sshd[4007]: Failed password for alice from 10.0.0.25 port 52433 ssh2
+Oct  3 09:13:02 web01 sshd[4008]: Failed password for alice from 10.0.0.25 port 52470 ssh2
+Oct  3 09:13:35 web01 sshd[4009]: Failed password for alice from 10.0.0.25 port 52518 ssh2
+Oct  3 09:13:59 web01 sshd[4010]: Failed password for alice from 10.0.0.25 port 52544 ssh2
+Oct  3 09:14:20 web01 sshd[4011]: Accepted password for alice from 10.0.0.25 port 52601 ssh2

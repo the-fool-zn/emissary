@@ -1,0 +1,16 @@
+# secrets and local state: never commit these
+.env
+.venv/
+*.db
+*.db-wal
+*.db-shm
+reports/
+
+# python
+__pycache__/
+.pytest_cache/
+
+# generated sample logs (recreate with: python data/samples/gen_logs.py)
+data/samples/*.log
+!data/samples/fp_auth.log
+!data/samples/injection_web.log

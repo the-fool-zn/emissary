@@ -1,0 +1,2 @@
+# Local demo blocklist: one IP per line. Replace with real threat-intel feeds later.
+203.0.113.50

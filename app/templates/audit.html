@@ -1,0 +1,9 @@
+{% extends "base.html" %}{% block title %}Audit{% endblock %}
+{% block body %}<h1>Audit trail</h1>
+<h2>Sign-in events (latest 50)</h2>
+<table><tr><th>Time (UTC)</th><th>IP</th><th>Username tried</th><th>Outcome</th></tr>
+{% for e in logins %}<tr><td>{{ e.ts }}</td><td>{{ e.ip }}</td><td>{{ e.username }}</td><td>{{ e.outcome }}</td></tr>{% else %}<tr><td colspan="4" class="muted">No events yet.</td></tr>{% endfor %}</table>
+<h2>AI tool calls (latest 100)</h2>
+<table><tr><th>Time (UTC)</th><th>Incident</th><th>Model</th><th>Round</th><th>Tool</th><th>Arguments</th><th>Result (start)</th></tr>
+{% for t in tool_calls %}<tr><td>{{ t.created_at }}</td><td><a href="/incidents/{{ t.incident_id }}">#{{ t.incident_id }}</a></td><td>{{ t.model }}</td><td>{{ t.round }}</td><td>{{ t.tool }}</td><td class="wrap">{{ t.arguments[:160] }}</td><td class="wrap">{{ t.result[:200] }}</td></tr>{% else %}<tr><td colspan="7" class="muted">No tool calls yet.</td></tr>{% endfor %}</table>
+{% endblock %}

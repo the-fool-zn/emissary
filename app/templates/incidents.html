@@ -1,0 +1,10 @@
+{% extends "base.html" %}{% block title %}Incidents{% endblock %}
+{% block body %}<h1>Incidents</h1>
+<form method="get" class="card row"><div><label>Status</label><br><select name="status"><option value="">any</option>
+{% for s in statuses %}<option value="{{ s }}" {% if s == f_status %}selected{% endif %}>{{ s }}</option>{% endfor %}</select></div>
+<div><label>Severity</label><br><select name="severity"><option value="">any</option>
+{% for s in ["P1","P2","P3","P4"] %}<option value="{{ s }}" {% if s == f_severity %}selected{% endif %}>{{ s }}</option>{% endfor %}</select></div>
+<div><button>Filter</button></div></form>
+{% if rows %}<table><tr><th>#</th><th>Severity</th><th>Title</th><th>Verdict</th><th>Status</th><th>Created</th></tr>
+{% for i in rows %}<tr><td>{{ i.id }}</td><td><span class="sev sev-{{ i.severity }}">{{ i.severity }}</span></td><td><a href="/incidents/{{ i.id }}">{{ i.title }}</a>{% if i.fallback %} <span class="muted">(automated review incomplete)</span>{% endif %}</td><td>{{ i.verdict }} ({{ i.confidence }})</td><td>{{ i.status }}</td><td>{{ i.created_at }}</td></tr>{% endfor %}</table>
+{% else %}<div class="card muted">No incidents match.</div>{% endif %}{% endblock %}
