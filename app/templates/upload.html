@@ -4,7 +4,7 @@
 <input type="hidden" name="csrf" value="{{ csrf }}">
 <div class="row"><div><label for="t">Log type</label><br><select id="t" name="source_type">
 {% for k, v in source_types.items() %}<option value="{{ k }}">{{ v }}</option>{% endfor %}</select></div>
-<div><label for="f">File (.log or .txt, up to {{ max_mb }} MB)</label><br><input id="f" type="file" name="file" accept=".log,.txt"></div></div>
+<div><label for="f">File (.log or .txt, up to {{ max_mb }} MB)</label><br><input id="f" type="file" name="file" ></div></div>
 <p>Or paste log lines:</p><textarea name="text" placeholder="Oct  3 09:00:06 web01 sshd[5056]: Failed password for root from 203.0.113.50 port 43038 ssh2"></textarea>
 <p class="muted">Analysis can take up to a minute or two. At most {{ max_alerts }} alerts per upload are investigated by the AI; the rest are still stored. Please wait for the page to load and do not press the button twice.</p>
 <p><button>Analyze</button></p></form></div>{% endblock %}
