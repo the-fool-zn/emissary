@@ -29,7 +29,7 @@ LLM_MAX_RETRIES = int(os.getenv("LLM_MAX_RETRIES", "2"))                   # use
 # --- agent limits (Phase 3) ---
 AGENT_MAX_ROUNDS = 8         # maximum tool-calling rounds per alert
 AGENT_TIMEOUT_SEC = 120      # wall-clock limit per alert
-AGENT_MAX_TOKENS = 40000     # total token ceiling per alert
+AGENT_MAX_TOKENS = 100000     # total token ceiling per alert
 
 # --- storage and pipeline (Phase 4) ---
 DB_PATH = Path(os.getenv("EMISSARY_DB", str(ROOT / "data" / "emissary.db")))
